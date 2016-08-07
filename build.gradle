@@ -1,0 +1,85 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.0.RELEASE")
+    }
+}
+
+group 'com.subha.security'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'groovy'
+apply plugin: 'java'
+apply plugin: 'war'
+apply plugin: 'idea'
+apply plugin: 'eclipse'
+apply plugin: 'spring-boot'
+
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.codehaus.groovy:groovy-all:2.3.11'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+
+    compile(
+            'org.springframework.boot:spring-boot-starter-web',
+            'org.springframework.boot:spring-boot-starter-security',
+            'org.springframework.boot:spring-boot-starter-jdbc',
+            'org.springframework.boot:spring-boot-starter-test'
+    )
+
+    compile(
+            'com.fasterxml.jackson.core:jackson-databind:2.7.3',
+            'com.fasterxml.jackson.core:jackson-core:2.7.3',
+            'com.fasterxml.jackson.core:jackson-annotations:2.7.3',
+    )
+
+    compile(
+            'org.apache.openjpa:openjpa-all:2.4.1'
+    )
+
+    compile(
+            'io.jsonwebtoken:jjwt:0.6.0',
+            'org.hsqldb:hsqldb:2.3.4'
+            //'org.slf4j:slf4j-api:1.7.21',
+            //'ch.qos.logback:logback-core:1.1.7',
+            //'ch.qos.logback:logback-classic:1.1.7',
+            //'ch.qos.logback:logback-access:1.1.7'
+    )
+
+    war {
+        archiveName 'SpringToken.war'
+    }
+
+    task wrapper(type: Wrapper) {
+        gradleVersion = '2.3'
+    }
+
+}
+
+test{
+    testLogging{
+
+        showStandardStreams = true
+
+        // Or set property events:
+        //events 'standard_out', 'standard_error'
+
+        // events = ['standard_out', 'standard_error']
+       // events = ['standard_out', 'standard_error']
+
+        // Instead of string values we can
+        // use enum values:
+
+        // events org.gradle.api.tasks.testing.logging.TestLogEvent.STANDARD_OUT,
+        //  org.gradle.api.tasks.testing.logging.TestLogEvent.STANDARD_ERROR,
+    }
+}

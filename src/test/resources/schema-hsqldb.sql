@@ -1,0 +1,1 @@
+create table student2(id integer PRIMARY KEY,name varchar(100) not null)
