@@ -36,14 +36,19 @@ class SecurityConfig extends WebSecurityConfigurerAdapter  {
 
     @Autowired
     public void configureAuthentication(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
+
+        println "***********  The Authentication Manager Builder is: ${authenticationManagerBuilder.getClass()}"
+
         authenticationManagerBuilder
                 .userDetailsService(userDetailsService)
-                .passwordEncoder(new BCryptPasswordEncoder());
+                /*.passwordEncoder(new BCryptPasswordEncoder());*/
+
+
     }
 
     @Bean
     @Override
-    public AuthenticationManager authenticationManager() throws Exception {
+    public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
 
@@ -69,7 +74,7 @@ class SecurityConfig extends WebSecurityConfigurerAdapter  {
                 .and()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .antMatchers("auth/**").permitAll()
+                .antMatchers("/auth/**").permitAll()
                 .anyRequest().authenticated();
 
         // Custom JWT based authentication

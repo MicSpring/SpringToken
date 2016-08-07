@@ -52,9 +52,10 @@ class AuthenticationTokenFilter extends UsernamePasswordAuthenticationFilter{
         String authToken = httpRequest.getHeader(ConfigConstant.tokenHeader);
         String username = this.tokenUtils.getUsernameFromToken(authToken);
 
+        println "******   ${SecurityContextHolder.getContext().getAuthentication()}"
+
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            println "Here 1"
             UserDetailsService userDetails = this.userDetailsService.loadUserByUsername(username);
 
             if (this.tokenUtils.validateToken(authToken, userDetails)) {

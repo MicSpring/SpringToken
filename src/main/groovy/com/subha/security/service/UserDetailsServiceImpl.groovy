@@ -19,6 +19,9 @@ class UserDetailsServiceImpl implements UserDetailsService{
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
+        println "************ userDetailsService called............"
+
           return new User(
                     999,
                     "MIC",

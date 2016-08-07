@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
@@ -38,16 +39,20 @@ class AuthenticationController {
     @RequestMapping(method = RequestMethod.POST)
     ResponseEntity<?> authenticateRequest(@RequestBody AuthenticationRequest authenticationRequest) {
 
-        println "************  In AuthenticateRequest  ************"
-        AuthenticationRequest authentication = this.authenticationManager.authenticate(
+        println "************  In AuthenticateRequest  $authenticationRequest"
+        println "************  The Authentication Manager ${authenticationManager.getClass()}"
+        Authentication authentication = this.authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         authenticationRequest.getUsername(),
                         authenticationRequest.getPassword()
                 )
         );
+
+        println "************  The Authentication class is: ${authentication.getClass()}"
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
 
+        println "************  The User Details Service is:${userDetailsService.getClass()}"
         // Reload password post-authentication so we can generate token
         UserDetails userDetails = this.userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
         String token = this.tokenUtils.generateToken(userDetails);
@@ -73,6 +78,12 @@ class AuthenticationController {
             return ResponseEntity.badRequest().body(null);
         }
 
+    }
+
+    @RequestMapping(value = "test", method = RequestMethod.GET)
+    public ResponseEntity<?> testMeFree()
+    {
+        return ResponseEntity.ok().body("Ok I am Fine")
     }
 
 
