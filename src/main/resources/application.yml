@@ -8,3 +8,8 @@ spring:
         username: sa
         password:
         platform: hsqldb
+    profiles:
+        active: staging
+
+# Please note: Active profiles can be set
+# Dynamically at build time through resource filtering in Gradle

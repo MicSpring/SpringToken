@@ -1,5 +1,6 @@
 package com.subha.security.utils
 
+import org.apache.commons.logging.LogFactory
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.stereotype.Component
@@ -14,8 +15,11 @@ import javax.servlet.http.HttpServletResponse
 @Component(value = "authenticationEntryPoint")
 class EntryPointUnauthorizedHandler implements AuthenticationEntryPoint{
 
+    def logger = LogFactory.getLog(EntryPointUnauthorizedHandler)
+
     @Override
     void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Access Denied");
+        logger.info(" *** In Auth EntryPoint with Exception $authException")
+        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Access Denied")
     }
 }

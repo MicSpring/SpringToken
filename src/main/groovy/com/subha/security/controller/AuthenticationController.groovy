@@ -1,10 +1,13 @@
 package com.subha.security.controller
 
+import ch.qos.logback.classic.Logger
 import com.subha.security.model.AuthenticationRequest
 import com.subha.security.model.AuthenticationResponse
 import com.subha.security.model.User
 import com.subha.security.utils.ConfigConstant
 import com.subha.security.utils.TokenUtils
+import groovy.util.logging.Slf4j
+import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.AuthenticationManager
@@ -23,9 +26,14 @@ import javax.servlet.http.HttpServletRequest
 /**
  * Created by user on 8/7/2016.
  */
+@Slf4j
 @RestController
 @RequestMapping("/auth")
 class AuthenticationController {
+
+    //private static
+
+    def logger = LogFactory.getLog(AuthenticationController);
 
     @Autowired
     AuthenticationManager authenticationManager
@@ -39,7 +47,7 @@ class AuthenticationController {
     @RequestMapping(method = RequestMethod.POST)
     ResponseEntity<?> authenticateRequest(@RequestBody AuthenticationRequest authenticationRequest) {
 
-        println "************  In AuthenticateRequest  $authenticationRequest"
+        logger.info "************  In AuthenticateRequest  $authenticationRequest"
         println "************  The Authentication Manager ${authenticationManager.getClass()}"
         Authentication authentication = this.authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -58,7 +66,7 @@ class AuthenticationController {
         String token = this.tokenUtils.generateToken(userDetails);
 
         // Return the token
-        return ResponseEntity.ok(new AuthenticationResponse(token));
+        ResponseEntity.ok(new AuthenticationResponse(token));
 
     }
 
@@ -73,9 +81,9 @@ class AuthenticationController {
 
         if (this.tokenUtils.canTokenBeRefreshed(token, user.getLastPasswordReset())) {
             String refreshedToken = this.tokenUtils.refreshToken(token);
-            return ResponseEntity.ok(new AuthenticationResponse(refreshedToken));
+             ResponseEntity.ok(new AuthenticationResponse(refreshedToken));
         } else {
-            return ResponseEntity.badRequest().body(null);
+             ResponseEntity.badRequest().body(null);
         }
 
     }
@@ -83,7 +91,7 @@ class AuthenticationController {
     @RequestMapping(value = "test", method = RequestMethod.GET)
     public ResponseEntity<?> testMeFree()
     {
-        return ResponseEntity.ok().body("Ok I am Fine")
+        ResponseEntity.ok().body("Ok I am Fine")
     }
 
 

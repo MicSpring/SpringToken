@@ -2,10 +2,12 @@ package com.subha.security.config
 
 import com.subha.security.filter.AuthenticationTokenFilter
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
 import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -27,20 +29,40 @@ import org.springframework.transaction.annotation.EnableTransactionManagement
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 class SecurityConfig extends WebSecurityConfigurerAdapter  {
 
-    @Autowired
+    /*@Autowired
     private UserDetailsService userDetailsService;
+*/
+    /*@Autowired
+    @Qualifier("userDetailsService2")
+    private UserDetailsService userDetailsService2;*/
 
     @Autowired
-    private AuthenticationEntryPoint authenticationEntryPoint;
+    private AuthenticationEntryPoint authenticationEntryPoint
 
+    @Autowired
+    AuthenticationProvider authenticationProvider
 
+   /* @Autowired
+    private AuthenticationManagerBuilder $authManagerBuilder*/
+
+    /**
+     *
+     * @param authenticationManagerBuilder
+     * @throws Exception
+     *
+     * This is another way autowiring an instance and configuring it at the same time
+     *
+     */
     @Autowired
     public void configureAuthentication(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
 
         println "***********  The Authentication Manager Builder is: ${authenticationManagerBuilder.getClass()}"
+        //println "*********** AuthManagerBuilder: $authManagerBuilder"
 
-        authenticationManagerBuilder
-                .userDetailsService(userDetailsService)
+        authenticationManagerBuilder.authenticationProvider(authenticationProvider)
+
+       /* authenticationManagerBuilder
+                .userDetailsService(userDetailsService2)*/
                 /*.passwordEncoder(new BCryptPasswordEncoder());*/
 
 
@@ -49,7 +71,8 @@ class SecurityConfig extends WebSecurityConfigurerAdapter  {
     @Bean
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
+        def authenticationManager = super.authenticationManagerBean()
+        authenticationManager
     }
 
 

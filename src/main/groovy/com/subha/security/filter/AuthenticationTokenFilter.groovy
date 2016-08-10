@@ -3,6 +3,7 @@ package com.subha.security.filter
 import com.subha.security.utils.ConfigConstant
 import com.subha.security.utils.TokenUtils
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetailsService
@@ -26,6 +27,7 @@ class AuthenticationTokenFilter extends UsernamePasswordAuthenticationFilter{
     private TokenUtils tokenUtils;
 
     @Autowired
+    @Qualifier("userDetailsService")
     private UserDetailsService userDetailsService;
 
     @Override
@@ -39,7 +41,7 @@ class AuthenticationTokenFilter extends UsernamePasswordAuthenticationFilter{
 
         userDetailsService = WebApplicationContextUtils
                 .getRequiredWebApplicationContext(this.getServletContext())
-                .getBean(UserDetailsService.class);
+                .getBean(UserDetailsService.class)//("userDetailsService");
 
         HttpServletResponse resp = (HttpServletResponse) response;
         resp.setHeader("Access-Control-Allow-Origin", "*");
@@ -52,7 +54,7 @@ class AuthenticationTokenFilter extends UsernamePasswordAuthenticationFilter{
         String authToken = httpRequest.getHeader(ConfigConstant.tokenHeader);
         String username = this.tokenUtils.getUsernameFromToken(authToken);
 
-        println "******   ${SecurityContextHolder.getContext().getAuthentication()}"
+        println "****** Authentication:  ${SecurityContextHolder.getContext().getAuthentication()}"
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 

@@ -54,16 +54,16 @@ dependencies {
             //'ch.qos.logback:logback-classic:1.1.7',
             //'ch.qos.logback:logback-access:1.1.7'
     )
-
-    war {
-        archiveName 'SpringToken.war'
-    }
-
-    task wrapper(type: Wrapper) {
-        gradleVersion = '2.3'
-    }
-
 }
+
+war {
+    archiveName 'SpringToken.war'
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.3'
+}
+
 
 test{
     testLogging{
