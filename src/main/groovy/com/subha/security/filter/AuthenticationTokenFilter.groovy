@@ -38,7 +38,7 @@ class AuthenticationTokenFilter extends UsernamePasswordAuthenticationFilter{
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
 
-        println "AuthenticationTokenFiler Called......"
+        logger.info "AuthenticationTokenFiler Called......"
 
         tokenUtils = WebApplicationContextUtils.getRequiredWebApplicationContext(this.getServletContext())
                 .getBean(TokenUtils.class);
