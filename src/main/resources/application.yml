@@ -13,3 +13,4 @@ spring:
 
 # Please note: Active profiles can be set
 # Dynamically at build time through resource filtering in Gradle
+#By passing it as command line argument during gradle build with -P option

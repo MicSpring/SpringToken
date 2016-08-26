@@ -2,10 +2,12 @@ package com.subha.security.filter
 
 import com.subha.security.utils.ConfigConstant
 import com.subha.security.utils.TokenUtils
+import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
@@ -29,6 +31,8 @@ class AuthenticationTokenFilter extends UsernamePasswordAuthenticationFilter{
     @Autowired
     @Qualifier("userDetailsService")
     private UserDetailsService userDetailsService;
+
+    def logger = LogFactory.getLog(AuthenticationTokenFilter);
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -54,13 +58,19 @@ class AuthenticationTokenFilter extends UsernamePasswordAuthenticationFilter{
         String authToken = httpRequest.getHeader(ConfigConstant.tokenHeader);
         String username = this.tokenUtils.getUsernameFromToken(authToken);
 
-        println "****** Authentication:  ${SecurityContextHolder.getContext().getAuthentication()}"
+        logger.info "****** Authentication:  ${SecurityContextHolder.getContext().getAuthentication()} \n ****** UserName: $username"
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            UserDetailsService userDetails = this.userDetailsService.loadUserByUsername(username);
+            logger.info "  ****** In Custom Filter Hurrah!!! Token Present"
+
+            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 
             if (this.tokenUtils.validateToken(authToken, userDetails)) {
+
+                logger.info "  ****** In Custom Filter Hurrah!!! Valid Token Present"
+
+
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpRequest));

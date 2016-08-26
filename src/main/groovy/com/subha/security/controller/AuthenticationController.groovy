@@ -47,6 +47,8 @@ class AuthenticationController {
     @RequestMapping(method = RequestMethod.POST)
     ResponseEntity<?> authenticateRequest(@RequestBody AuthenticationRequest authenticationRequest) {
 
+        logger.info "************  Controller Method Call Starts"
+
         logger.info "************  In AuthenticateRequest  $authenticationRequest"
         println "************  The Authentication Manager ${authenticationManager.getClass()}"
         Authentication authentication = this.authenticationManager.authenticate(
@@ -66,6 +68,9 @@ class AuthenticationController {
         String token = this.tokenUtils.generateToken(userDetails);
 
         // Return the token
+
+        logger.info "************  Controller Method Call Ends"
+
         ResponseEntity.ok(new AuthenticationResponse(token));
 
     }
