@@ -38,7 +38,7 @@ public class TokenUtils {
 
     private String secret = "sssshhhh!";
 
-    private Long expiration = 604800L;
+    private Long expiration = 100L;
 
     public String getUsernameFromToken(String token) {
         String username;
@@ -46,6 +46,7 @@ public class TokenUtils {
             final Claims claims = this.getClaimsFromToken(token);
             username = claims.getSubject();
         } catch (Exception e) {
+            //e.printStackTrace();
             username = null;
         }
         return username;
@@ -92,6 +93,7 @@ public class TokenUtils {
                     .parseClaimsJws(token)
                     .getBody();
         } catch (Exception e) {
+            //e.printStackTrace();
             claims = null;
         }
         return claims;
@@ -102,7 +104,7 @@ public class TokenUtils {
     }
 
     private Date generateExpirationDate() {
-        return new Date(System.currentTimeMillis() + this.expiration * 1000);
+        return new Date(System.currentTimeMillis() + 100l * 1000);
     }
 
     private Boolean isTokenExpired(String token) {
@@ -160,6 +162,8 @@ public class TokenUtils {
         final String username = this.getUsernameFromToken(token);
         final Date created = this.getCreatedDateFromToken(token);
         final Date expiration = this.getExpirationDateFromToken(token);
+        System.out.println("**********  The Expiration Date is: "+expiration);
+        System.out.println("**********  The Current Date is:"+this.generateCurrentDate());
         return (username.equals(user.getUsername())
                 && !(this.isTokenExpired(token))
                 && !(this.isCreatedBeforeLastPasswordReset(created, user.getLastPasswordReset())));

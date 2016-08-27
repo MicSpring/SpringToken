@@ -50,7 +50,7 @@ class AuthenticationController {
         logger.info "************  Controller Method Call Starts"
 
         logger.info "************  In AuthenticateRequest  $authenticationRequest"
-        println "************  The Authentication Manager ${authenticationManager.getClass()}"
+        logger.info "************  The Authentication Manager ${authenticationManager.getClass()}"
         Authentication authentication = this.authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         authenticationRequest.getUsername(),
@@ -58,11 +58,9 @@ class AuthenticationController {
                 )
         );
 
-        println "************  The Authentication class is: ${authentication.getClass()}"
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-
-        println "************  The User Details Service is:${userDetailsService.getClass()}"
+        logger.info "************  The Authentication class is: ${authentication.getClass()}"
+        //SecurityContextHolder.getContext().setAuthentication(authentication);
+        logger.info "************  The User Details Service is:${userDetailsService.getClass()}"
         // Reload password post-authentication so we can generate token
         UserDetails userDetails = this.userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
         String token = this.tokenUtils.generateToken(userDetails);
@@ -75,10 +73,10 @@ class AuthenticationController {
 
     }
 
-    @RequestMapping(value = "refresh", method = RequestMethod.GET)
+    @RequestMapping(value = "/refresh", method = RequestMethod.GET)
     public ResponseEntity<?> refreshToken(HttpServletRequest request) {
 
-        println "************  In RefreshToken  ************"
+        logger.info "************  In RefreshToken  ************"
 
         String token = request.getHeader(ConfigConstant.tokenHeader);
         String username = this.tokenUtils.getUsernameFromToken(token);
@@ -92,12 +90,5 @@ class AuthenticationController {
         }
 
     }
-
-    @RequestMapping(value = "test", method = RequestMethod.GET)
-    public ResponseEntity<?> testMeFree()
-    {
-        ResponseEntity.ok().body("Ok I am Fine")
-    }
-
 
 }
