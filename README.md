@@ -4,7 +4,7 @@ This time I tried to implement Security with JWT token using Spring Security mod
 
 Let’s chalk out the high level flow first:
 
-1) User at first will fetch the JWT token from the URL: http://localhost:8080/SpringToken/auth
+1) User at first will fetch the JWT token from the URL: <b>http://localhost:8080/SpringToken/auth</b>
 by passing the user id and password in json format in the request body.
 
 We will make this URL “permit all” in Spring Security so that Spring does not enforce any authentication or authorization rule for this URL and anonymous authentication is implemented with AnonymousAuthenticationToken.
