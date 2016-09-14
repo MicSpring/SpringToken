@@ -104,7 +104,7 @@ public class TokenUtils {
     }
 
     private Date generateExpirationDate() {
-        return new Date(System.currentTimeMillis() + 100l * 1000);
+        return new Date(System.currentTimeMillis() + 300l * 1000);
     }
 
     private Boolean isTokenExpired(String token) {

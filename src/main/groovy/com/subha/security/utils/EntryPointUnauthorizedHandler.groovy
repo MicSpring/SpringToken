@@ -19,7 +19,7 @@ class EntryPointUnauthorizedHandler implements AuthenticationEntryPoint{
 
     @Override
     void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        logger.info(" *** In Auth EntryPoint with Exception $authException")
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Access Denied")
+        logger.info(" ********* In Auth EntryPoint with Exception $authException")
+        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Access Denied for ${authException.getMessage()}")
     }
 }

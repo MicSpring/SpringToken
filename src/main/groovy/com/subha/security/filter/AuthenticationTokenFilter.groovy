@@ -6,6 +6,7 @@ import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.AuthenticationException
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
@@ -69,12 +70,14 @@ class AuthenticationTokenFilter extends UsernamePasswordAuthenticationFilter{
             if (this.tokenUtils.validateToken(authToken, userDetails)) {
 
                 logger.info "  ****** In Custom Filter Hurrah!!! Valid Token Present"
-
-
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpRequest));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+            else{
+                logger.info "***** In valid Token detected in the request........"
+                throw new AuthenticationException(" *****  Invalid Token, Either False Token or Expired..... "){}
             }
         }
 

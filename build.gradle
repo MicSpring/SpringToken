@@ -33,7 +33,8 @@ dependencies {
             'org.springframework.boot:spring-boot-starter-web',
             'org.springframework.boot:spring-boot-starter-security',
             'org.springframework.boot:spring-boot-starter-jdbc',
-            'org.springframework.boot:spring-boot-starter-test'
+            'org.springframework.boot:spring-boot-starter-test',
+            'org.springframework.boot:spring-boot-starter-data-elasticsearch:1.4.0.RELEASE'
     )
 
     compile(

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder
@@ -14,6 +15,7 @@ import javax.sql.DataSource
  * Created by user on 8/4/2016.
  */
 @Configuration
+@EnableElasticsearchRepositories(basePackages = "com.subha.security.repo")
 class DBConfig {
 
     @Autowired

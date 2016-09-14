@@ -10,6 +10,11 @@ spring:
         platform: hsqldb
     profiles:
         active: staging
+    data:
+        elasticsearch:
+            cluster-nodes: localhost:9300
+            repositories:
+                enabled: true
 
 # Please note: Active profiles can be set
 # Dynamically at build time through resource filtering in Gradle
