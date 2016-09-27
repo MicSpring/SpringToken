@@ -6,6 +6,7 @@ import com.subha.security.service.BookService
 import org.apache.commons.logging.LogFactory
 import org.elasticsearch.client.transport.NoNodeAvailableException
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.elasticsearch.core.ElasticsearchTemplate
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RequestBody
@@ -28,6 +29,9 @@ class BookController {
     @Autowired
     BookService bookService
 
+    @Autowired
+    ElasticsearchTemplate elasticsearchTemplate
+
     @RequestMapping(value="/add",method = RequestMethod.POST)
     def addBook(@RequestBody Book book){
         logger.info "******  Adding Book $book in ELASTIC DB......"
@@ -40,13 +44,38 @@ class BookController {
         bookService.getByName(name)
     }
 
+    @RequestMapping(value="/addIndex",method = RequestMethod.POST)
+    def addBookIndex(@RequestParam(name = "indexName")String indexName){
+        logger.info "******  Adding Book  Index: $indexName in ELASTIC DB......"
+        elasticsearchTemplate.createIndex(indexName)
+    }
+
+    @RequestMapping(value="/deleteIndex",method = RequestMethod.POST)
+    def deleteBookIndex(@RequestParam(name = "indexName")String indexName){
+        logger.info "******  Deleting Book  Index: $indexName in ELASTIC DB......"
+        elasticsearchTemplate.deleteIndex(indexName)
+    }
+    @RequestMapping(value="/addMapping",method = RequestMethod.POST)
+    def addBookMapping(){
+        logger.info "******  Adding Book Mapping in ELASTIC DB......"
+        elasticsearchTemplate.putMapping(Book)
+        logger.info "****** The Mapping name is:${elasticsearchTemplate.getMapping(Book)}"
+    }
+
+
     /**
      * Local Exception Handling
      */
 
     @ExceptionHandler(NoNodeAvailableException.class)
-    def handleError(HttpServletRequest req, Exception ex) {
+    def handleNoNodeAvailableError(HttpServletRequest req, Exception ex) {
         logger.error("**********  Request: " + req.getRequestURL() + " raised " + ex);
+        throw new Exception(ex.getMessage())
+    }
+
+    @ExceptionHandler(Exception.class)
+    def handleGenericError(HttpServletRequest req, Exception ex) {
+        logger.error("Generic **********  Request: " + req.getRequestURL() + " raised " + ex);
         throw new Exception(ex.getMessage())
     }
 
