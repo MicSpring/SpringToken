@@ -5,8 +5,11 @@ import com.subha.security.entities.elastic.Book
 import com.subha.security.service.BookService
 import org.apache.commons.logging.LogFactory
 import org.elasticsearch.client.transport.NoNodeAvailableException
+import org.elasticsearch.common.xcontent.XContentFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate
+import org.springframework.data.elasticsearch.core.query.IndexQueryBuilder
+import org.springframework.data.elasticsearch.core.query.StringQuery
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RequestBody
@@ -35,7 +38,11 @@ class BookController {
     @RequestMapping(value="/add",method = RequestMethod.POST)
     def addBook(@RequestBody Book book){
         logger.info "******  Adding Book $book in ELASTIC DB......"
-        bookService.addBook(book)
+        //bookService.addBook(book)
+        def indexQuery = new IndexQueryBuilder().withObject(book).withIndexName("book").withType("funcprog").build();
+        def result = elasticsearchTemplate.index(indexQuery)
+        logger.info "****** Result is: $result "
+        result
     }
 
     @RequestMapping(value="/retrieve",method = RequestMethod.GET)
@@ -47,19 +54,40 @@ class BookController {
     @RequestMapping(value="/addIndex",method = RequestMethod.POST)
     def addBookIndex(@RequestParam(name = "indexName")String indexName){
         logger.info "******  Adding Book  Index: $indexName in ELASTIC DB......"
-        elasticsearchTemplate.createIndex(indexName)
+        def result = elasticsearchTemplate.createIndex(indexName)
+        logger.info "****** Result is: $result "
+        result
     }
 
     @RequestMapping(value="/deleteIndex",method = RequestMethod.POST)
     def deleteBookIndex(@RequestParam(name = "indexName")String indexName){
         logger.info "******  Deleting Book  Index: $indexName in ELASTIC DB......"
-        elasticsearchTemplate.deleteIndex(indexName)
+        def result = elasticsearchTemplate.deleteIndex(indexName)
+        logger.info "****** Result is: $result "
+        result
     }
     @RequestMapping(value="/addMapping",method = RequestMethod.POST)
     def addBookMapping(){
         logger.info "******  Adding Book Mapping in ELASTIC DB......"
-        elasticsearchTemplate.putMapping(Book)
-        logger.info "****** The Mapping name is:${elasticsearchTemplate.getMapping(Book)}"
+        def data = XContentFactory.jsonBuilder().startObject()/*.startObject("book")*/
+               /* .startObject("mappings")*/
+                .startObject("funcprog")
+                .startObject("properties")
+                .startObject("author").field("type","nested")
+                .startObject("properties")
+                .startObject("name")
+                .field("type","String").endObject().endObject().endObject()
+                .startObject("id").field("type","Long").endObject()
+                .startObject("name").field("type","String").endObject()
+                .endObject()
+                .endObject()
+                /*.endObject()*/
+                /*.endObject()*/
+                .endObject()
+
+        def result = elasticsearchTemplate.putMapping("book","funcprog",data)
+        logger.info "****** Result is: $result "
+        result
     }
 
 
