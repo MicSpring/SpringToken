@@ -91,11 +91,20 @@ class BookController {
         NativeSearchQueryBuilder nativeSearchQueryBuilder = new NativeSearchQueryBuilder();
         //def nativeQuery = nativeSearchQueryBuilder.withIndices("book").withTypes("funcprog").withQuery(matchAllQuery()).build()
 
-        def matchQueryBuilder = matchQuery("author.name","Gordon")
+        def matchQueryBuilder = matchQuery("author.name","gordon3")
         def boolQueryBuilder = boolQuery().must(matchQueryBuilder)
 
+        def matchQueryBuilder2 = termQuery("name","action")
+        def boolQueryBuilder2 = boolQuery().must(matchQueryBuilder2)
+
+        def temQueryBuilder = termQuery("name","222")
+        def boolQueryBuilder3 = boolQuery().must(temQueryBuilder)
+
         def nativeSearchQuery = nativeSearchQueryBuilder.withIndices("book").withTypes("funcprog").
-                withQuery(nestedQuery("author",boolQueryBuilder)).build()
+                withQuery(boolQuery().must(nestedQuery("author",boolQueryBuilder)).must(boolQueryBuilder2))
+                /*withQuery(temQueryBuilder)*/
+                /*withQuery(nestedQuery("author",boolQueryBuilder2))*/
+                .build()
         /**
          * Criteria Queria do not support nested querying...
          */
