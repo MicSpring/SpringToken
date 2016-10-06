@@ -109,6 +109,8 @@ class BookController {
          * Criteria Queria do not support nested querying...
          */
 
+
+
         /*Criteria criteria = new Criteria("name")
         criteria.contains("007").startsWith("Groovy2")
         *//*Criteria criteria2 = new Criteria("author")
@@ -161,6 +163,68 @@ class BookController {
 
         def result = elasticsearchTemplate.putMapping("book","funcprog",data)
         logger.info "****** Result is: $result "
+        result
+    }
+
+    @RequestMapping(value="/addMapping2",method = RequestMethod.POST)
+    def addHospitalMapping(){
+        logger.info "******  Adding Book Mapping in ELASTIC DB......"
+        def data = XContentFactory.jsonBuilder().startObject()
+
+
+                .startObject("doctor")
+
+                .startObject("_parent")
+                .field("type","hospital")
+                .endObject()
+
+
+
+                .startObject("properties")
+
+                .startObject("docname")
+                .field("type","String")
+                .endObject()
+
+                .startObject("trade")
+                .field("type","String")
+                .endObject()
+
+                .endObject()
+                .endObject()
+
+                .endObject()
+
+
+
+                def result = elasticsearchTemplate.putMapping("parchild","doctor",data)
+        logger.info "****** First Result mapping is: $result "
+
+        data = XContentFactory.jsonBuilder().startObject()/*.startObject("book")*/
+        /* .startObject("mappings")*/
+                .startObject("hospital")
+                .startObject("properties")
+
+                .startObject("hospname")
+                .field("type","String")
+                .endObject()
+
+                .startObject("location")
+                .field("type","String")
+                .endObject()
+
+                .endObject()
+                .endObject()
+
+
+
+                .endObject()
+
+
+
+
+            result = elasticsearchTemplate.putMapping("parchild","hospital",data)
+        logger.info "****** Second Result Mapping is: $result "
         result
     }
 
