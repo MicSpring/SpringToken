@@ -4,6 +4,8 @@ package com.subha.security.controller
 
 import com.subha.security.entities.elastic.Author
 import com.subha.security.entities.elastic.Book
+import com.subha.security.entities.elastic.Doctor
+import com.subha.security.entities.elastic.Hospital
 import com.subha.security.service.BookService
 import org.apache.commons.logging.LogFactory
 import org.elasticsearch.client.transport.NoNodeAvailableException
@@ -51,6 +53,22 @@ class BookController {
         def indexQuery = new IndexQueryBuilder().withObject(book).withIndexName("book").withType("funcprog").build();
         def result = elasticsearchTemplate.index(indexQuery)
         logger.info "****** Result is: $result "
+        result
+    }
+
+    @RequestMapping(value="/addHospDoc",method = RequestMethod.POST)
+    def addHospDoc(@RequestBody Hospital hospital){
+        logger.info "******  Adding Book $hospital in ELASTIC DB......"
+        //bookService.addBook(book)
+        def indexQuery = new IndexQueryBuilder().withObject(hospital).withIndexName("parchild").withType("hospital").build();
+        def result = elasticsearchTemplate.index(indexQuery)
+        logger.info "****** Result (Hospital) is: $result "
+
+        Doctor doctor = new Doctor(docname:"Docname:"+hospital.id,trade:"trade:"+hospital.id)
+        indexQuery = new IndexQueryBuilder().withObject(doctor).withIndexName("parchild").withType("doctor").
+                withParentId(String.valueOf(hospital.id)).build();
+        result = elasticsearchTemplate.index(indexQuery)
+        logger.info "****** Result (Doctor) is: $result "
         result
     }
 
@@ -125,6 +143,24 @@ class BookController {
         def result = elasticsearchTemplate.queryForList(nativeSearchQuery,Book)//elasticsearchTemplate.queryForList(criteriaQuery,Book)/*elasticsearchTemplate.queryForPage(stringQuery,Book)*///elasticsearchTemplate.queryForList(stringQuery,Book)//elasticsearchTemplate.queryForObject(stringQuery,Book)/**/
         logger.info "@@@@@@@@ The Result is: $result "
         result
+    }
+
+
+    @RequestMapping(value="/retrieveParChild",method = RequestMethod.GET)
+    def retrieveParChild() {
+        def matchQueryBuilder = matchQuery("id",1)
+        def boolQueryBuilder2 = boolQuery().must(matchQueryBuilder)
+        def hasParentQueryBuilder = hasParentQuery("hospital",matchQueryBuilder)
+
+        NativeSearchQueryBuilder nativeSearchQueryBuilder = new NativeSearchQueryBuilder();
+
+        def nativeSearchQuery = nativeSearchQueryBuilder.withIndices("parchild").withTypes("hospital","doctor")
+                    .withQuery(hasParentQueryBuilder).build()
+
+        def result = elasticsearchTemplate.queryForList(nativeSearchQuery,Hospital)
+        logger.info "### The Result is: $result "
+        result
+
     }
 
     @RequestMapping(value="/addIndex",method = RequestMethod.POST)
