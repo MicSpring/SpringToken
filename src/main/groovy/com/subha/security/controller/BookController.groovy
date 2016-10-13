@@ -7,6 +7,7 @@ import com.subha.security.entities.elastic.Book
 import com.subha.security.entities.elastic.Doctor
 import com.subha.security.entities.elastic.Hospital
 import com.subha.security.service.BookService
+import groovy.json.JsonBuilder
 import org.apache.commons.logging.LogFactory
 import org.elasticsearch.client.transport.NoNodeAvailableException
 import org.elasticsearch.common.xcontent.XContentFactory
@@ -58,18 +59,25 @@ class BookController {
 
     @RequestMapping(value="/addHospDoc",method = RequestMethod.POST)
     def addHospDoc(@RequestBody Hospital hospital){
-        logger.info "******  Adding Book $hospital in ELASTIC DB......"
-        //bookService.addBook(book)
-        def indexQuery = new IndexQueryBuilder().withObject(hospital).withIndexName("parchild").withType("hospital").build();
+        logger.info "******  Adding Hospital $hospital in ELASTIC DB......"
+        def indexQuery = new IndexQueryBuilder().withId(hospital.id).withObject(hospital)
+                            .withIndexName("parchild").withType("hospital").build();
         def result = elasticsearchTemplate.index(indexQuery)
         logger.info "****** Result (Hospital) is: $result "
 
-        Doctor doctor = new Doctor(docname:"Docname:"+hospital.id,trade:"trade:"+hospital.id)
-        indexQuery = new IndexQueryBuilder().withObject(doctor).withIndexName("parchild").withType("doctor").
-                withParentId(String.valueOf(hospital.id)).build();
+        Doctor doctor = new Doctor(id:"child1${hospital.id}",parentId:hospital.id,docname:"Docname1",trade:"trade1")
+         indexQuery = new IndexQueryBuilder().withId("child1${hospital.id}").withObject(doctor).withParentId(hospital.id)
+                .withIndexName("parchild").withType("doctor").build();
         result = elasticsearchTemplate.index(indexQuery)
         logger.info "****** Result (Doctor) is: $result "
-        result
+
+        doctor = new Doctor(id:"child2${hospital.id}",parentId:hospital.id,docname:"Docname11",trade:"trade11")
+        indexQuery = new IndexQueryBuilder().withId("child2${hospital.id}").withObject(doctor).withParentId(hospital.id)
+                .withIndexName("parchild").withType("doctor").build();
+
+         result = elasticsearchTemplate.index(indexQuery)
+        logger.info "****** Result (Doctor) is: $result "
+        new JsonBuilder(result).toPrettyString()
     }
 
     @RequestMapping(value="/addtemp",method = RequestMethod.POST)
@@ -148,8 +156,8 @@ class BookController {
 
     @RequestMapping(value="/retrieveParChild",method = RequestMethod.GET)
     def retrieveParChild() {
-        def matchQueryBuilder = matchQuery("id",1)
-        def boolQueryBuilder2 = boolQuery().must(matchQueryBuilder)
+        def matchQueryBuilder = matchQuery("hospname","CMC33")
+        //def boolQueryBuilder2 = boolQuery().must(matchQueryBuilder)
         def hasParentQueryBuilder = hasParentQuery("hospital",matchQueryBuilder)
 
         NativeSearchQueryBuilder nativeSearchQueryBuilder = new NativeSearchQueryBuilder();
@@ -157,7 +165,7 @@ class BookController {
         def nativeSearchQuery = nativeSearchQueryBuilder.withIndices("parchild").withTypes("hospital","doctor")
                     .withQuery(hasParentQueryBuilder).build()
 
-        def result = elasticsearchTemplate.queryForList(nativeSearchQuery,Hospital)
+        def result = elasticsearchTemplate.queryForList(nativeSearchQuery,Doctor)
         logger.info "### The Result is: $result "
         result
 
@@ -218,6 +226,14 @@ class BookController {
 
                 .startObject("properties")
 
+                .startObject("id")
+                .field("type","String")
+                .endObject()
+
+                .startObject("parentId")
+                .field("type","String")
+                .endObject()
+
                 .startObject("docname")
                 .field("type","String")
                 .endObject()
@@ -240,6 +256,10 @@ class BookController {
         /* .startObject("mappings")*/
                 .startObject("hospital")
                 .startObject("properties")
+
+                .startObject("id")
+                .field("type","String")
+                .endObject()
 
                 .startObject("hospname")
                 .field("type","String")
@@ -272,12 +292,14 @@ class BookController {
     @ExceptionHandler(NoNodeAvailableException.class)
     def handleNoNodeAvailableError(HttpServletRequest req, Exception ex) {
         logger.error("**********  Request: " + req.getRequestURL() + " raised " + ex);
+        logger.error ex
         throw new Exception(ex.getMessage())
     }
 
     @ExceptionHandler(Exception.class)
     def handleGenericError(HttpServletRequest req, Exception ex) {
         logger.error("Generic **********  Request: " + req.getRequestURL() + " raised " + ex);
+        logger.error ex
         throw new Exception(ex.getMessage())
     }
 

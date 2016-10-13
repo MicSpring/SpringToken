@@ -9,6 +9,8 @@ import org.springframework.data.elasticsearch.annotations.Document
 @ToString
 @Document(indexName = "parchild")
 class Doctor {
-    String docname
-    String trade
+     String id
+     String parentId
+     String docname
+     String trade
 }

@@ -6,11 +6,11 @@ import org.springframework.data.elasticsearch.annotations.Document
 /**
  * Created by user on 10/7/2016.
  */
-@ToString
+@ToString()
 @Document(indexName = "parchild")
 class Hospital {
-    long id
-    String hospname
-    String location
+     String id
+     String hospname
+     String location
 
 }
